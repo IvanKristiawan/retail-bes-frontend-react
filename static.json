@@ -2,5 +2,10 @@
     "root": "build/",
     "routes": {
         "/**": "index.html"
+    },
+    "proxies": {
+        "/api": {
+            "origin": "https://retail-bes.herokuapp.com"
+        }
     }
 }
