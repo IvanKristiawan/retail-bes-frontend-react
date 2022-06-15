@@ -187,7 +187,7 @@ const TampilPenjualanStok = () => {
               <tr key={aPenjualanStok.kodeStok}>
                 <td>
                   <Link
-                    to={`/daftarPenjualanStok/penjualanStok/${id}/${aPenjualanStok.kodeStok}`}
+                    to={`/daftarPenjualanStok/penjualanStok/${id}/${aPenjualanStok._id}`}
                     style={{ textDecoration: "none", color: "inherit" }}
                     onClick={getUserById()}
                   >

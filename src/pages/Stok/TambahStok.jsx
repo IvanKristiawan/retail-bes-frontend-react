@@ -68,7 +68,7 @@ const TambahStok = () => {
           console.log(e);
         }) 
 
-      await axios.post("http://localhost:5000/stoks", {
+      await axios.post(`${tempUrl}/stoks`, {
         gambarId: tempGambarId,
         gambar: tempGambar,
         kodeGrup,
