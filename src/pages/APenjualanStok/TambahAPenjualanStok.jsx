@@ -59,7 +59,7 @@ const TambahAPenjualanStok = () => {
           hargaSatuan * qty -
           (hargaSatuan * qty * potongan) / 100,
       });
-      const findStok = stoks.find((stok) => stok.kode == kodeStok);
+      const findStok = stoks.find((stok) => stok.kode === kodeStok);
       const newQty = parseInt(findStok.qty) - parseInt(qty);
       await axios.patch(`${tempUrl}/stoks/${findStok._id}`, {
         qty: newQty,
@@ -116,7 +116,7 @@ const TambahAPenjualanStok = () => {
                   </option>
                   {stoks
                     .filter((val) => {
-                      if (searchTerm == "") {
+                      if (searchTerm === "") {
                         return val;
                       } else if (
                         val.kode

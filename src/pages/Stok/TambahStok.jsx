@@ -54,19 +54,22 @@ const TambahStok = () => {
 
     try {
       setLoading(true);
-      await axios
-        .post(
-          "https://api.cloudinary.com/v1_1/dbtag5lau/image/upload",
-          formData
-        )
-        .then((response) => {
-          tempGambar = response.data.url;
-          tempGambarId = response.data.public_id;
-        })
-        .catch(e => {
-          tempGambar = "";
-          console.log(e);
-        }) 
+      {
+        imageSelected &&
+          (await axios
+            .post(
+              "https://api.cloudinary.com/v1_1/dbtag5lau/image/upload",
+              formData
+            )
+            .then((response) => {
+              tempGambar = response.data.url;
+              tempGambarId = response.data.public_id;
+            })
+            .catch((e) => {
+              tempGambar = "";
+              console.log(e);
+            }));
+      }
 
       await axios.post(`${tempUrl}/stoks`, {
         gambarId: tempGambarId,
@@ -125,7 +128,9 @@ const TambahStok = () => {
                     value={kodeGrup}
                     onChange={(e) => setKodeGrup(e.target.value)}
                   >
-                    <option value="" select="true" >Pilih Kode Stok</option>
+                    <option value="" select="true">
+                      Pilih Kode Stok
+                    </option>
                     {grup.map((grup, index) => (
                       <option value={grup.kode} key={grup.kode}>
                         {grup.kode} - {grup.namaGroup}

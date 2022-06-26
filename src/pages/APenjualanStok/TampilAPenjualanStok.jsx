@@ -59,7 +59,7 @@ const TampilAPenjualanStok = () => {
   const deleteUser = async (id) => {
     try {
       setLoading(true);
-      const findStok = stoks.find((stok) => stok.kode == kodeStok);
+      const findStok = stoks.find((stok) => stok.kode === kodeStok);
       const newQty = parseInt(findStok.qty) + parseInt(qty);
       await axios.patch(`${tempUrl}/stoks/${findStok._id}`, {
         qty: newQty,

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import "bulma/css/bulma.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { Header } from "../../components";
 import { useStateContext } from "../../contexts/ContextProvider";
-import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 import { tempUrl } from "../../data/dataContainer";
-import { Pagination, Loader } from "../../components";
+import { Pagination, Loader, ShowList } from "../../components";
+import { ShowTableSupplier } from "../../components/ShowTable";
+import SearchBar from "../../components/SearchBar";
+import ButtonGroup1 from "../../components/ButtonGroup1";
 
 const TampilSupplier = () => {
   const { screenSize } = useStateContext();
@@ -28,7 +29,9 @@ const TampilSupplier = () => {
 
   useEffect(() => {
     getUsers();
-    getUserById();
+    {
+      id && getUserById();
+    }
   }, []);
 
   const getUsers = async () => {
@@ -72,7 +75,7 @@ const TampilSupplier = () => {
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const tempPosts = users.filter((val) => {
-    if (searchTerm == "") {
+    if (searchTerm === "") {
       return val;
     } else if (
       val.namaSupplier.toUpperCase().includes(searchTerm.toUpperCase()) ||
@@ -103,48 +106,14 @@ const TampilSupplier = () => {
           justifyContent: screenSize <= 600 ? "center" : "space-between",
         }}
       >
-        <div>
-          <Link
-            to={`/supplier/tambahSupplier`}
-            className="button is-success is-small"
-          >
-            +Tambah
-          </Link>
-          <Link
-            to={`/supplier/${id}/edit`}
-            className="button is-info is-small"
-            style={{ visibility: kode ? "visible" : "hidden" }}
-          >
-            <AiOutlineEdit /> Ubah
-          </Link>
-          <button
-            onClick={() => deleteUser(id)}
-            className="button is-danger is-small"
-            style={{ visibility: kode ? "visible" : "hidden" }}
-          >
-            <AiOutlineDelete /> Hapus
-          </button>
-        </div>
-        <div
-          className="field has-addons"
-          style={{
-            marginTop: screenSize <= 600 ? "20px" : "0",
-          }}
-        >
-          <div className="control">
-            <input
-              className="input"
-              type="text"
-              placeholder="Kata Kunci"
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="control">
-            <button type="submit" className="button is-info">
-              Cari
-            </button>
-          </div>
-        </div>
+        <ButtonGroup1
+          id={id}
+          kode={kode}
+          addLink={`/supplier/tambahSupplier`}
+          editLink={`/supplier/${id}/edit`}
+          deleteUser={deleteUser}
+        />
+        <SearchBar setSearchTerm={setSearchTerm} screenSize={screenSize} />
       </div>
       <div
         className="flex flex-row"
@@ -153,143 +122,21 @@ const TampilSupplier = () => {
         }}
       >
         <div className="column is-half">
-          <div className="field">
-            <label className="label">Kode</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={kode ? kode : ""}
-                onChange={(e) => setKode(e.target.value)}
-                placeholder="Kode"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Nama</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={namaSupplier ? namaSupplier : ""}
-                onChange={(e) => setNama(e.target.value)}
-                placeholder="Nama"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Alamat</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={alamatSupplier ? alamatSupplier : ""}
-                onChange={(e) => setAlamat(e.target.value)}
-                placeholder="Alamat"
-                disabled
-              />
-            </div>
-          </div>
+          <ShowList name="Kode" value={kode} setValue={setKode} />
+          <ShowList name="Nama" value={namaSupplier} setValue={setNama} />
+          <ShowList name="Alamat" value={alamatSupplier} setValue={setAlamat} />
         </div>
         <div className="column is-half">
-          <div className="field">
-            <label className="label">Kota</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={kota ? kota : ""}
-                onChange={(e) => setKota(e.target.value)}
-                placeholder="Kota"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Telpon</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={telp ? telp : ""}
-                onChange={(e) => setTelp(e.target.value)}
-                placeholder="Telpon"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">NPWP</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={npwp ? npwp : ""}
-                onChange={(e) => setNpwp(e.target.value)}
-                placeholder="NPWP"
-                disabled
-              />
-            </div>
-          </div>
+          <ShowList name="Kota" value={kota} setValue={setKota} />
+          <ShowList name="Telpon" value={telp} setValue={setTelp} />
+          <ShowList name="NPWP" value={npwp} setValue={setNpwp} />
         </div>
       </div>
-      <table className="table is-striped is-fullwidth mt-5">
-        <thead>
-          <tr>
-            <th>Kode</th>
-            <th>Nama</th>
-            <th className="is-hidden-mobile">Alamat</th>
-            <th className="is-hidden-mobile">Kota</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPosts
-            .filter((val) => {
-              if (searchTerm == "") {
-                return val;
-              } else if (
-                val.namaSupplier
-                  .toUpperCase()
-                  .includes(searchTerm.toUpperCase()) ||
-                val.kode.toUpperCase().includes(searchTerm.toUpperCase()) ||
-                val.alamatSupplier
-                  .toUpperCase()
-                  .includes(searchTerm.toUpperCase()) ||
-                val.kota.toUpperCase().includes(searchTerm.toUpperCase())
-              ) {
-                return val;
-              }
-            })
-            .map((user, index) => (
-              <tr key={user._id}>
-                <td>
-                  <Link
-                    to={`/supplier/${user._id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                    onClick={getUserById()}
-                  >
-                    {user.kode}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    to={`/supplier/${user._id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                    onClick={getUserById()}
-                  >
-                    {screenSize >= 600
-                      ? user.namaSupplier
-                      : `${user.namaSupplier.substr(0, 15)}...`}
-                  </Link>
-                </td>
-                <td className="is-hidden-mobile">{user.alamatSupplier}</td>
-                <td className="is-hidden-mobile">{user.kota}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <ShowTableSupplier
+        screenSize={screenSize}
+        currentPosts={currentPosts}
+        searchTerm={searchTerm}
+      />
       <div className="flex justify-center">
         <Pagination
           currentPage={currentPage}

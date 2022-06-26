@@ -7,7 +7,8 @@ import { Header } from "../../components";
 import { useStateContext } from "../../contexts/ContextProvider";
 import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 import { tempUrl } from "../../data/dataContainer";
-import { Pagination, Loader } from "../../components";
+import { Pagination, Loader, ShowList } from "../../components";
+import { ShowTablePembelianStok } from "../../components/ShowTable";
 
 const TampilPembelianStok = () => {
   const { screenSize } = useStateContext();
@@ -29,14 +30,13 @@ const TampilPembelianStok = () => {
     getSupplier();
     getStoks();
     getAPembelianStoks();
-    getUserById();
+    {id && getUserById()}
   }, []);
 
   const getSupplier = async () => {
     setLoading(true);
     const response = await axios.get(`${tempUrl}/suppliers`);
     setSuppliers(response.data);
-    setLoading(false);
   };
 
   const getStoks = async () => {
@@ -50,7 +50,6 @@ const TampilPembelianStok = () => {
     setLoading(true);
     const response = await axios.get(`${tempUrl}/aPembelianStoks`);
     setAPembelianStok(response.data);
-    setLoading(false);
   };
 
   const getUserById = async () => {
@@ -120,14 +119,12 @@ const TampilPembelianStok = () => {
           <Link
             to={`/daftarPembelianStok/pembelianStok/${id}/edit`}
             className="button is-info is-small"
-            style={{ visibility: nomorNota ? "visible" : "hidden" }}
           >
             <AiOutlineEdit /> Ubah
           </Link>
           <button
             onClick={() => deleteUser(id)}
             className="button is-danger is-small"
-            style={{ visibility: nomorNota ? "visible" : "hidden" }}
           >
             <AiOutlineDelete /> Hapus
           </button>
@@ -135,32 +132,12 @@ const TampilPembelianStok = () => {
       </div>
       <div className="flex flex-row">
         <div className="column is-half">
-          <div className="field">
-            <label className="label">Nomor Nota</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={nomorNota ? nomorNota : ""}
-                onChange={(e) => setNomorNota(e.target.value)}
-                placeholder="Nomor Nota"
-                disabled
-              />
-            </div>
-          </div>
-          <div className="field">
-            <label className="label">Jenis</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={jenis ? jenis : ""}
-                onChange={(e) => setJenis(e.target.value)}
-                placeholder="Jenis"
-                disabled
-              />
-            </div>
-          </div>
+          <ShowList
+            name="Nomor Nota"
+            value={nomorNota}
+            setValue={setNomorNota}
+          />
+          <ShowList name="Jenis" value={jenis} setValue={setJenis} />
           <div className="field">
             <label className="label">Kode Supplier</label>
             <div className="control">
@@ -168,7 +145,7 @@ const TampilPembelianStok = () => {
                 type="text"
                 className="input"
                 value={`${kodeSupplier} - ${suppliers
-                  .filter((supplier) => supplier.kode == kodeSupplier)
+                  .filter((supplier) => supplier.kode === kodeSupplier)
                   .map((sup) => ` ${sup.namaSupplier}`)}`}
                 onChange={(e) => setKodeSupplier(e.target.value)}
                 placeholder="Kode Supplier"
@@ -176,71 +153,15 @@ const TampilPembelianStok = () => {
               />
             </div>
           </div>
-          <div className="field">
-            <label className="label">Total</label>
-            <div className="control">
-              <input
-                type="text"
-                className="input"
-                value={total ? total : 0}
-                onChange={(e) => setTotal(e.target.value)}
-                placeholder="Total"
-                disabled
-              />
-            </div>
-          </div>
+          <ShowList name="Total" value={total} setValue={setTotal} />
         </div>
       </div>
-      <table className="table is-striped is-fullwidth mt-5">
-        <thead>
-          <tr>
-            <th>Kode Stok</th>
-            <th>Nama Stok</th>
-            <th className="is-hidden-mobile">Qty</th>
-            <th className="is-hidden-mobile">Harga</th>
-            <th className="is-hidden-mobile">Potongan</th>
-            <th className="is-hidden-mobile">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentPosts
-            .filter((val) => {
-              if (val.nomorNota === nomorNota) {
-                return val;
-              }
-            })
-            .map((aPembelianStok, index) => (
-              <tr key={aPembelianStok.kodeStok}>
-                <td>
-                  <Link
-                    to={`/daftarPembelianStok/pembelianStok/${id}/${aPembelianStok._id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                    onClick={getUserById()}
-                  >
-                    {aPembelianStok.kodeStok}
-                  </Link>
-                </td>
-                <td>
-                  <Link
-                    to={`/daftarPembelianStok/pembelianStok/${id}/${aPembelianStok._id}`}
-                    style={{ textDecoration: "none", color: "inherit" }}
-                    onClick={getUserById()}
-                  >
-                    {stoks
-                      .filter((stok) => stok.kode == aPembelianStok.kodeStok)
-                      .map((stk) => ` ${stk.namaStok}`)}
-                  </Link>
-                </td>
-                <td className="is-hidden-mobile">{aPembelianStok.qty}</td>
-                <td className="is-hidden-mobile">
-                  {aPembelianStok.hargaSatuan}
-                </td>
-                <td className="is-hidden-mobile">{aPembelianStok.potongan}</td>
-                <td className="is-hidden-mobile">{aPembelianStok.subtotal}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+      <ShowTablePembelianStok
+        id={id}
+        currentPosts={currentPosts}
+        stoks={stoks}
+        nomorNota={nomorNota}
+      />
       <div className="flex justify-center">
         <Pagination
           currentPage={currentPage}
